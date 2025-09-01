@@ -1,72 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mini QTX Game</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      background: #111;
+      background-color: #111;
       color: #fff;
+      margin: 0;
+      padding: 0;
     }
     h1 {
-      color: #00ff99;
+      color: #00cc66;
+      margin-top: 20px;
     }
     #balance {
-      font-size: 22px;
-      margin: 15px;
+      margin: 15px 0;
+      font-size: 18px;
+      color: #bbb;
     }
-    .coinAnim {
-      position: absolute;
-      color: gold;
-      font-weight: bold;
-      font-size: 20px;
-      animation: fly 1s ease-out forwards;
-    }
-    @keyframes fly {
-      from { opacity: 1; transform: translateY(0); }
-      to { opacity: 0; transform: translateY(-60px); }
-    }
-    #adResult {
-      margin-top: 10px;
+    button {
+      background: #00cc66;
+      color: white;
+      border: none;
+      padding: 10px 20px;
       font-size: 16px;
-      color: #0f0;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 10px;
+    }
+    button:hover {
+      background: #00994d;
+    }
+    .ads-container {
+      margin-top: 20px;
     }
   </style>
   <script async src="https://sad.adsgram.ai/js/sad.min.js"></script>
 </head>
 <body>
   <h1>Mini QTX Game</h1>
-  <p id="balance">Balance: 0 QTX</p>
+  <div id="balance">Balance: 0 QTX</div>
 
-  <!-- AdsGram Block -->
-  <adsgram-task block-id="task_14370"></adsgram-task>
+  <!-- Watch & Earn Button -->
+  <button onclick="showAd()">🎬 Watch & Earn</button>
 
-  <p id="adResult"></p>
+  <div class="ads-container">
+    <!-- Correct AdsGram Task -->
+    <adsgram-task block-id="task-14370"></adsgram-task>
+  </div>
 
   <script>
     let balance = 0;
 
-    // Jab ad pura watch hoga
-    document.addEventListener('adsgram-task-complete', function(e){
-        const earned = 5; // reward amount
-        balance += earned;
-        document.getElementById('balance').textContent = "Balance: " + balance + " QTX";
-
-        // Coin animation
-        const coin = document.createElement('div');
-        coin.className = 'coinAnim';
-        coin.textContent = `+${earned}`;
-        const rect = document.querySelector('adsgram-task').getBoundingClientRect();
-        coin.style.left = (rect.left + rect.width/2 - 10) + 'px';
-        coin.style.top = (rect.top - 30) + 'px';
-        document.body.appendChild(coin);
-        setTimeout(()=> coin.remove(), 1000);
-
-        document.getElementById('adResult').textContent = `✅ Ad finished! You earned ${earned} QTX.`;
-    });
+    function showAd() {
+      try {
+        window.Adsgram.show({
+          blockId: "task-14370",
+          debug: true,
+          onReward: function() {
+            balance += 10; // har ad par 10 QTX milega
+            document.getElementById("balance").innerText = "Balance: " + balance + " QTX";
+            alert("🎉 You earned 10 QTX!");
+          },
+          onError: function(error) {
+            console.error("Adsgram error:", error);
+            alert("Ad failed: " + error);
+          }
+        });
+      } catch (err) {
+        console.error("Ad load error:", err);
+        alert("Something went wrong!");
+      }
+    }
   </script>
 </body>
 </html>
